@@ -62,5 +62,5 @@ Programming, pp. 537-542, September 2000
 
 ### display
 + 时间计算模块
-+ 数独交互页面模块
+
 + 性能测试，文件调用模块

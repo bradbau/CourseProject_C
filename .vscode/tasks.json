@@ -38,9 +38,11 @@
             "command": "g++",
             "args": [
                 "-g",
-                "${file}",
+                "./project/cnfparser.h",
+                "./project/cnfparser.c",
+                "./project/main.cpp",
                 "-o",
-                "${fileBasenameNoExtension}",
+                "${fileBasenameNoExtension}.exe",
                 "-fexec-charset=gbk"
             ],
             "problemMatcher": {

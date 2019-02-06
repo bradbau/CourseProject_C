@@ -1,0 +1,5 @@
+启发：
+冗余子句数量为多少最好？
+
+工程：
+cnfparser的identicalclause函数可以提高效率
