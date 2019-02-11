@@ -40,6 +40,8 @@
                 "-g",
                 "./project/cnfparser.h",
                 "./project/cnfparser.c",
+                "./project/solver.h",
+                "./project/solver.c",
                 "./project/main.cpp",
                 "-o",
                 "${fileBasenameNoExtension}.exe",

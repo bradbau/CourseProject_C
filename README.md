@@ -47,10 +47,17 @@ Programming, pp. 537-542, September 2000
     引入文字蕴含图，
         >一般来讲学习子旬长度越短对将来搜索空间的剪除效果越大，因此目前最先进的SAT解决器如zChaff,Minisat等均是采用第一蕴含点切割线的方法(IUIP)进行子句学习的．
          _熊伟.可满足性问题DPLL算法研究.硕士学位论文, 复旦大学,2007_
+    
+    - 回溯判断
+        判断现有未隐藏子句是否包含矛盾（实践中需要灵活操作）
 
 
 解函数包括基本版本与优化版
 + 基本版与优化插件位置
+    - backtrack_chronologic的逻辑：
+    每次退出assignstack里一个元素，查看literalvalue数组里面的值，如果大于2，说明不能继续反转，把他的literalvalue清零；退出一个元素，直到有可以反转的，保留literalvalue但是assignstack已不含该元素，表明这个文字是第二次被赋值.
+    他的每一次回溯要还原被隐藏的子句时通过子句的pivotindex实现，由于d_clause之前的子句按照decision level升序排列，所以可以通过pivotindex还原由该特定文字造成的子句满足和隐藏。
+    
 
 
 

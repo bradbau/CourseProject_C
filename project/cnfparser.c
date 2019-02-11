@@ -32,10 +32,7 @@ extern cnf_fmla* cnfStdLoad(char * filename){
 
     //start processing the data
 
-    // in creating the crossing list ,using an array to store the ref of the last ref of the literal of certain index
-    cnf_literal ** lastRef;
-    lastRef = (cnf_literal **)malloc(n_literal * sizeof(cnf_literal*));
-    memset(lastRef, 0, n_literal * sizeof(cnf_literal*));
+   
     //declare the formula 
     cnf_fmla * cnfPhi;
     cnf_clause * preCls, *prevsCls;//present clause and previous clause
@@ -43,11 +40,20 @@ extern cnf_fmla* cnfStdLoad(char * filename){
     cnfPhi = (cnf_fmla *)malloc(sizeof(cnf_fmla));
     cnfPhi->firstClause = (cnf_clause *)malloc(sizeof(cnf_clause));
     preCls = cnfPhi->firstClause;
+    preCls->prevsClause = NULL;
     cnfPhi->learnedClause = NULL;
-    prevsCls = NULL;
     preCls->firstLiteral = (cnf_literal *)malloc(sizeof(cnf_literal));
     preLtrl = preCls->firstLiteral;
     prevsLtrl = NULL;
+
+    cnfPhi->d_clause = cnfPhi->firstClause;
+    cnfPhi->literalValue = (int *)malloc(n_literal * sizeof(int));
+    memset(cnfPhi->literalValue, 0, n_literal*sizeof(int));
+    cnfPhi->literalNum = n_literal;
+
+    cnfPhi->assignStack = (int *)malloc(n_literal * sizeof(int));
+    memset(cnfPhi->assignStack, 0, n_literal*sizeof(int));
+    cnfPhi->assignDepth = 0;
 
     char literal[16];
     
@@ -55,44 +61,40 @@ extern cnf_fmla* cnfStdLoad(char * filename){
         int ltrl = atoi(literal);
         if(ltrl!=0){
             preLtrl->index = ltrl;
-            preLtrl->nextRef = NULL;
             preLtrl->prevsLiteral = prevsLtrl;
             if(prevsLtrl){
                 prevsLtrl->nextLiteral = preLtrl;
             }
             prevsLtrl = preLtrl;
-            if(lastRef[abs(ltrl)-1])
-                lastRef[abs(ltrl)-1]->nextRef = preLtrl;
-            
-            lastRef[abs(ltrl)-1] = preLtrl;
+           
             preLtrl->nextLiteral = (cnf_literal *)malloc(sizeof(cnf_literal));
             preLtrl = preLtrl->nextLiteral;
         }
         else{
+            preLtrl->index =0; //set the mark literal
             preLtrl->prevsLiteral = prevsLtrl;
-            if(prevsLtrl){
-                prevsLtrl->nextLiteral = preLtrl;
-            }
+            prevsLtrl->nextLiteral = preLtrl;
             preLtrl->nextLiteral = NULL;
-            
-            //set the head and tail pointer
-            preCls->h_literal = preCls->firstLiteral;
-            preCls->t_literal = preLtrl;
-            preCls->hb_literal = preCls->tb_literal = NULL;
+            prevsLtrl = NULL;
+           
+            //set the divide pointer
+            preCls->d_literal = preCls->firstLiteral;
 
-            preCls->prevsClause = prevsCls;
-            if(prevsCls)
-                prevsCls->nextClause = preCls;
+
+
             prevsCls = preCls;
             preCls->nextClause = (cnf_clause *)malloc(sizeof(cnf_clause));
             preCls = preCls->nextClause; 
+            preCls->prevsClause = prevsCls;
             preCls->firstLiteral = (cnf_literal *)malloc(sizeof(cnf_literal));
             preLtrl = preCls->firstLiteral;
         }
     }
     //free the extra space allocated by the last round
-    free(preCls);
     free(preLtrl);
+    preCls = preCls->prevsClause;
+    free(preCls->nextClause);
+    preCls->nextClause = NULL;
     fclose(pFile);
 
     return  cnfPhi;
@@ -101,29 +103,29 @@ extern cnf_fmla* cnfStdLoad(char * filename){
 
 
 extern status AddClause(cnf_fmla * phi, cnf_clause *alpha, int mode){
-    if(HasClause(phi, alpha)==TRUE)
+    if(HasClause_basic(phi, alpha)!=NULL)
         return OK;
     else{
         cnf_clause * preCls, *lastCls;
         if(mode==0){
-           preCls = phi->firstLiteral;
-           phi->firstLiteral = alpha;
-           phi->firstLiteral->prevsLiteral = NULL;
-           phi->firstLiteral->nextLiteral = preCls;
-           preCls->prevsLiteral = alpha;
+           preCls = phi->firstClause;
+           phi->firstClause = alpha;
+           phi->firstClause->prevsClause = NULL;
+           phi->firstClause->nextClause = preCls;
+           preCls->prevsClause = alpha;
            //add reference of literal
         }
         else{
             preCls = phi->learnedClause;
         }
-        lastCls = pre
+        lastCls = preCls;
         
     }
 }
 
 extern status DeleteClause(cnf_fmla *phi, cnf_clause *alpha){
     cnf_clause * pCls;
-    if(pCLs = HasClause_basic(phi, alpha))
+    if(pCls = HasClause_basic(phi, alpha))
     pCls->prevsClause->nextClause = pCls->nextClause;
     pCls->nextClause->prevsClause = pCls->prevsClause;
     RecollectLiteral(alpha->firstLiteral);
@@ -132,20 +134,20 @@ extern status DeleteClause(cnf_fmla *phi, cnf_clause *alpha){
 }
 
 extern status  RecollectLiteral(cnf_literal* l){
-    if(!(l->nextLiteral){
+    if(!(l->nextLiteral)){
         free(l);
         return OK;
     } 
     else 
-    RecollectLiteral(l->nextLiteral);
+        RecollectLiteral(l->nextLiteral);
 }
 
-extern status IdenticalClause(cnf_clause * alpha, cnf_clause * beta)
-{// whether the clause alpha and beta have same members
+extern status IdenticalClause(cnf_clause * alpha, cnf_clause * beta){
+// whether the clause alpha and beta have same members
 //still has improve space
     cnf_literal * preLtrl = beta->firstLiteral;
     while(preLtrl){
-        if(HasLiteral(alpha, preLtrl))
+        if(HasLiteral(alpha, preLtrl->index))
             preLtrl = preLtrl->nextLiteral;
         else{
             return FALSE;
@@ -153,7 +155,7 @@ extern status IdenticalClause(cnf_clause * alpha, cnf_clause * beta)
     }
     preLtrl = alpha->firstLiteral;
     while(preLtrl){
-        if(HasLiteral(beta, preLtrl))
+        if(HasLiteral(beta, preLtrl->index))
             preLtrl = preLtrl->nextLiteral;
         else{
             return FALSE;
@@ -162,14 +164,14 @@ extern status IdenticalClause(cnf_clause * alpha, cnf_clause * beta)
     return TRUE;
 }
 
-extern cnf_literal* HasLiteral(cnf_clause * alpha, cnf_literal * l){
-     cnf_literal * preLtrl = alpha->firstLiteral;
-        while(preLtrl){
-            if( abs(alpha->index)==abs(l->index))
-                return 
+extern cnf_literal* HasLiteral(cnf_clause * alpha, int l){
+     cnf_literal * preLtrl = alpha->d_literal;
+        do{
+            if( abs(preLtrl->index)==abs(l))
+                return preLtrl;
             else
                 preLtrl = preLtrl->nextLiteral;
-        }
+        }while(preLtrl->index!=0);
     return NULL;
 }
 
@@ -182,7 +184,7 @@ extern cnf_clause* HasClause_basic(cnf_fmla * phi, cnf_clause * alpha){
             preCls = preCls->nextClause;
         }
     }
-    cnf_clause * preCls = phi->learnedClause;
+    preCls = phi->learnedClause;
     while(preCls){
         if(IdenticalClause(preCls, alpha))
         return preCls;
@@ -206,7 +208,7 @@ extern cnf_literal * TraverseFormula(cnf_fmla * phi, cnf_literal * l, status(*vi
         }
         preCls = preCls->nextClause;
     }
-    cnf_clause * preCls = phi->learnedClause;
+    preCls = phi->learnedClause;
     while(preCls){
         cnf_literal * preLtrl = preCls->firstLiteral;
         while(preLtrl){
