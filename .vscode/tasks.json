@@ -42,6 +42,8 @@
                 "./project/cnfparser.c",
                 "./project/solver.h",
                 "./project/solver.c",
+                "./project/display.h",
+                "./project/display.c",
                 "./project/main.cpp",
                 "-o",
                 "${fileBasenameNoExtension}.exe",
