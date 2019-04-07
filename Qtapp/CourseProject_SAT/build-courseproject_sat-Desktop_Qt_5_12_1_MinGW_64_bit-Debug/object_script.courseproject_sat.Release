@@ -1,0 +1,13 @@
+release/main.o
+release/dialog.o
+release/cnfparser.o
+release/display.o
+release/solver.o
+release/cnf_solver.o
+release/mainwindow.o
+release/sudoku.o
+release/savesudo.o
+release/sudopart.o
+release/moc_dialog.o
+release/moc_cnf_solver.o
+release/moc_mainwindow.o

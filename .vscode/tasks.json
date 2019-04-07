@@ -44,7 +44,7 @@
                 "./project/solver.c",
                 "./project/display.h",
                 "./project/display.c",
-                "./project/main.cpp",
+                "./project/maintest.cpp",
                 "-o",
                 "${fileBasenameNoExtension}.exe",
                 "-fexec-charset=gbk"

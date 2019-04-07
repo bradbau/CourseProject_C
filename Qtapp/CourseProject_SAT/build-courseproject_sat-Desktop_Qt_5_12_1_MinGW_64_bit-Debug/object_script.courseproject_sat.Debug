@@ -1,0 +1,13 @@
+debug/main.o
+debug/dialog.o
+debug/cnfparser.o
+debug/display.o
+debug/solver.o
+debug/cnf_solver.o
+debug/mainwindow.o
+debug/sudoku.o
+debug/savesudo.o
+debug/sudopart.o
+debug/moc_dialog.o
+debug/moc_cnf_solver.o
+debug/moc_mainwindow.o

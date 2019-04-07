@@ -8,6 +8,7 @@
 #include<time.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include<sys/types.h>
 #include"cnfparser.h"
 #include"solver.h"
 
@@ -18,15 +19,22 @@ extern "C"
 
 
 // measuring the effiency of solver on single cnf case  return time comsumed 
-extern status CaseRunner_single(char * filename, bool(*solver)(cnf_fmla *), char * resultDir);
+extern char* CaseRunner_single(char * filename, int(*solver)(cnf_fmla *), char * resultDir);
 
 //measure the effience in batch 
 //traverse the case file 
-extern status CaseRunner_batch(char *filefolder, bool(*solver)(cnf_fmla *), char * resultDir);
+extern int CaseRunner_batch(char *filefolder, int(*solver)(cnf_fmla *), char * resultDir);
 
+//construct an display string of cnf formula
+extern char * Displaycnf(cnf_fmla *phi);
+extern char * DisplayRes(cnf_fmla *phi);
 
+extern char * AddClsStr_Res(cnf_fmla * phi, cnf_clause *preCls, char *Res, int * cnfstrsize);
+extern char * ConstructResStr(int result, cnf_fmla* phi, int timeuse);
+extern char * ConstructResname(char * srcfilename, char * resDirStr);
+extern char * AddClsStr(cnf_clause *preCls, char *cnfStr, int *cnfstrsize);
 
-
+void mkdirs(char *muldir);//make mutiple directorys 
 
 
 #ifdef __cplusplus

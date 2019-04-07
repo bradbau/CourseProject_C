@@ -15,5 +15,6 @@
         "deque": "cpp",
         "vector": "cpp"
     },
-    "C_Cpp.dimInactiveRegions": true
+    "C_Cpp.dimInactiveRegions": true,
+    "C_Cpp.errorSquiggles": "Disabled"
 }
